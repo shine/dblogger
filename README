@@ -15,8 +15,8 @@ we can store all information in one place and in one instance.
 === Status ===
 Experimental.
 
-I'll not recommend to use it in production. It is not stable so take it as pure
-idea. I'll continue to work with it.
+I'll not reccommend to use it in production. This hack was tested with CRUD
+operations only. You can try to use it in different actions at your own risk.
 
 btw, feel free to tell me your ideas about ways to improve it. My electromail is
 in the bottom of this page.
@@ -40,6 +40,8 @@ LoggedRequest.errors_during_last 10.minutes
 Percent of the WARN, ERROR and FATAL messages in the whole message number during last 2 days:
 LoggedRequest.percent_of_warn_during_last 2.days #=> 0.239 (23.9%)
 
+Remove all logs for current environment:
+rake db:log:clear
 === How fast is it? ===
 I have not made complete investigation of this detail and I have not made any
 optimisation of performance. Meanwhile, I have added it to one of my current

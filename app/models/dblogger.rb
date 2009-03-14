@@ -47,9 +47,9 @@ module ActiveSupport
       mes_arr = message.split
 
       processing_time = mes_arr[2].delete("ms").to_i
-      response_code = mes_arr[8].to_i
-      response_status = mes_arr[9]
-      request_url = mes_arr[10][1..(mes_arr[10].size-2)]
+      response_code = mes_arr[mes_arr.size - 3].to_i
+      response_status = mes_arr[mes_arr.size - 2]
+      request_url = mes_arr[mes_arr.size - 1][1..(mes_arr[mes_arr.size - 1].size-2)]
 
       {
         :processing_time => processing_time,
