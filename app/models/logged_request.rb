@@ -55,8 +55,9 @@ class LoggedRequest
   # Some sugar...
   # LoggedRequest.errors_during_last 10.minutes
   # or
-  # LoggedRequest.percent_of_warn_during_last 2.days
-  # (hint: all FATALs and ERRORs are counted as WARNINGS)
+  # LoggedRequest.percent_of_warn_during_last 2.days (hint: all FATALs and ERRORs are counted as WARNINGS)
+  # or
+  # LoggedRequest.latest_error
   class << self
     LoggedEvent.types_of_events.values.each do |level|
       define_method(level.downcase + "s_during_last") do |dt|
@@ -67,6 +68,11 @@ class LoggedRequest
         all = LoggedRequest.during_last dt
         level_type = all.select{|req| req.level_number >= LoggedEvent.types_of_events.invert[level]}
         all.empty? ? 0 : sprintf("%.3f", level_type.size.to_f/all.size).to_f
+      end
+
+      define_method("latest_"+level.downcase) do
+        event = LoggedEvent.find :last, :conditions => ['level = ?', level]
+        event.present? ? self.find_by_event(event) : nil
       end
     end
   end
