@@ -18,7 +18,7 @@ class LoggedRequest
   end
 
   def updated_at
-
+    self.events.map{|e| e.updated_at}.max
   end
 
   # Level of request is the common status of request. For example, INFO or FATAL.
