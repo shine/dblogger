@@ -46,11 +46,22 @@ class LoggedRequestTest < Test::Unit::TestCase
     assert percent <= 1.0
   end
 
-  should "have timestamp attributes equal to the lates event in it" do
+  should "have timestamp attributes equal to the latest event in it" do
     req = LoggedRequest.latest_info
+    req_created_at = req.created_at
+    req_updated_at = req.updated_at
+
     
     assert req.respond_to? :created_at
+    req.events.each do |event|
+      assert event.created_at <= req_created_at
+    end
+
+
     assert req.respond_to? :updated_at
+    req.events.each do |event|
+      assert event.updated_at <= req_updated_at
+    end
   end
 
   should "be able to find latest request by its type" do
