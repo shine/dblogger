@@ -1,9 +1,13 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-one:
-  title: MyString
-  body: MyText
-
-two:
-  title: MyString
-  body: MyText
+--- 
+posts_001: 
+  created_at: 2009-03-13 16:37:29
+  body: third body
+  title: third title
+  updated_at: 2009-03-13 16:37:29
+  id: "3"
+posts_002: 
+  created_at: 2009-03-14 05:56:01
+  body: Lorem ipsum bla bla bla dfh hzj budhvuyegvuky ebhkuuuvbkuebyh kuuuegbv
+  title: fourth title444
+  updated_at: 2009-03-22 10:40:43
+  id: "4"

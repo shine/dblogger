@@ -5,7 +5,6 @@ class LoggedRequest
     @events = events
   end
 
-
   # There can be only one (c) value in the set of events
   @@MCLEOD_FIELDS = %w(ip controller action request_type processing_time response_code response_status request_url)
   @@MCLEOD_FIELDS.each do |field_name|
@@ -14,6 +13,13 @@ class LoggedRequest
     end
   end
 
+  def created_at
+    self.events.map{|e| e.created_at}.max
+  end
+
+  def updated_at
+
+  end
 
   # Level of request is the common status of request. For example, INFO or FATAL.
   def level
@@ -51,6 +57,7 @@ class LoggedRequest
 
     events.map{|event| self.find_by_event event}.uniq
   end
+
 
   # Some sugar...
   # LoggedRequest.errors_during_last 10.minutes
