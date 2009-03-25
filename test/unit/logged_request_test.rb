@@ -65,10 +65,11 @@ class LoggedRequestTest < Test::Unit::TestCase
   end
 
   should "be able to find latest request by its type" do
-    latest = LoggedRequest.latest_fatal
+    latest = LoggedRequest.latest_error
 
-    all = LoggedRequest.fatals_during_last 1.year
+    all = LoggedRequest.errors_during_last 1.year
     all.delete(latest)
+    assert all.size > 0
 
     all.each do |request|
       assert latest.created_at > request.created_at

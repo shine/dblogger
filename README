@@ -61,6 +61,9 @@ So we have +42% of time needed to run rspec right now.
 Is it big? I think it is not. It is fair price for huge flexibility boost of your 
 application configuration.
 
+=== License ===
+WTFPL
+
 === I ===
 Victor Brylew <victor.brylew@gmail.com>
 Ruby on Rails freelance programmer

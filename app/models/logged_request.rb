@@ -49,10 +49,16 @@ class LoggedRequest
   # General function for looking latest LoggedRequests
   # LoggedRequest.during_last 10.minutes, {:action => 'index'}
   def self.during_last dt, where = {}
-    if where.blank? # No additional limitations so lets find all types of requests
+    levels = where.delete(:level)# || LoggedEvent.types_of_events.values
+
+    if where.empty? && levels.blank? # No additional limitations so lets find all types of requests
       events = LoggedEvent.find :all, :conditions => ['created_at > ?', dt.ago]
-    else
+    elsif levels.blank?
       events = LoggedEvent.find :all, :conditions => [where.map{|key, value| "#{key} = '#{value}'"}.join(" AND ") + ' AND created_at > ?', dt.ago]
+    elsif where.empty?
+      events = LoggedEvent.find :all, :conditions => ['created_at > ? AND level IN (?)', dt.ago, levels]
+    else
+      events = LoggedEvent.find :all, :conditions => [where.map{|key, value| "#{key} = '#{value}'"}.join(" AND ") + ' AND created_at > ? AND level IN (?)', dt.ago, levels]
     end
 
     events.map{|event| self.find_by_event event}.uniq
@@ -68,17 +74,18 @@ class LoggedRequest
   class << self
     LoggedEvent.types_of_events.values.each do |level|
       define_method(level.downcase + "s_during_last") do |dt|
-        LoggedRequest.during_last dt, {:level => level}
+        LoggedRequest.during_last dt, {:level => LoggedEvent.this_and_higher_levels(level).values}
       end
 
       define_method("percent_of_"+level.downcase + "s_during_last") do |dt|
         all = LoggedRequest.during_last dt
-        level_type = all.select{|req| req.level_number >= LoggedEvent.types_of_events.invert[level]}
+        level_type = all.select{|req| LoggedEvent.this_and_higher_levels(level).keys.any?{|key| key == req.level}}
         all.empty? ? 0 : sprintf("%.3f", level_type.size.to_f/all.size).to_f
       end
 
       define_method("latest_"+level.downcase) do
-        event = LoggedEvent.find :last, :conditions => ['level = ?', level]
+        level_names = LoggedEvent.this_and_higher_levels(level).values
+        event = LoggedEvent.find :last, :conditions => ['level IN (?)', level_names]
         event.present? ? self.find_by_event(event) : nil
       end
     end
