@@ -5,14 +5,18 @@ class LoggedRequest
     @events = events
   end
 
+
+
   # There can be only one (c) value in the set of events
-  @@MCLEOD_FIELDS = %w(ip controller action request_type processing_time response_code response_status request_url)
-  @@MCLEOD_FIELDS.each do |field_name|
+  LoggedEvent.mcleod_fields.each do |field_name|
     define_method(field_name) do
       @events.select{|event| event.send(field_name).present?}.first.send(field_name)
     end
   end
 
+
+
+  # Time of the Request is the latest time from all events in it
   def created_at
     self.events.map{|e| e.created_at}.max
   end
@@ -20,6 +24,8 @@ class LoggedRequest
   def updated_at
     self.events.map{|e| e.updated_at}.max
   end
+
+
 
   # Level of request is the common status of request. For example, INFO or FATAL.
   def level
@@ -46,23 +52,25 @@ class LoggedRequest
   end
 
 
+
   # General function for looking latest LoggedRequests
   # LoggedRequest.during_last 10.minutes, {:action => 'index'}
   def self.during_last dt, where = {}
-    levels = where.delete(:level)# || LoggedEvent.types_of_events.values
+    level_names = where.delete(:level)
 
-    if where.empty? && levels.blank? # No additional limitations so lets find all types of requests
+    if where.empty? && level_names.blank? # No additional limitations so lets find all types of requests
       events = LoggedEvent.find :all, :conditions => ['created_at > ?', dt.ago]
-    elsif levels.blank?
+    elsif level_names.blank?
       events = LoggedEvent.find :all, :conditions => [where.map{|key, value| "#{key} = '#{value}'"}.join(" AND ") + ' AND created_at > ?', dt.ago]
     elsif where.empty?
-      events = LoggedEvent.find :all, :conditions => ['created_at > ? AND level IN (?)', dt.ago, levels]
+      events = LoggedEvent.find :all, :conditions => ['created_at > ? AND level IN (?)', dt.ago, level_names]
     else
-      events = LoggedEvent.find :all, :conditions => [where.map{|key, value| "#{key} = '#{value}'"}.join(" AND ") + ' AND created_at > ? AND level IN (?)', dt.ago, levels]
+      events = LoggedEvent.find :all, :conditions => [where.map{|key, value| "#{key} = '#{value}'"}.join(" AND ") + ' AND created_at > ? AND level IN (?)', dt.ago, level_names]
     end
 
     events.map{|event| self.find_by_event event}.uniq
   end
+
 
 
   # Some sugar...
@@ -90,6 +98,7 @@ class LoggedRequest
       end
     end
   end
+
 
 
   #Few methods to get Array#uniq working. Each request has its own unique set of events
