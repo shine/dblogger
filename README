@@ -13,13 +13,10 @@ the first Rails Recipes there was similar recipe that was extremely non-DRY. Now
 we can store all information in one place and in one instance.
 
 === Status ===
-Experimental.
+Beta.
 
-I'll not reccommend to use it in production. This hack was tested with CRUD
-operations only. You can try to use it in different actions at your own risk.
-
-btw, feel free to tell me your ideas about ways to improve it. My electromail is
-in the bottom of this page.
+I'll recomend to use very carefully in production projects. It work well with 
+unstandard types of event so feel free to create you own types and use.
 
 === How it should be installed ===
 You are replacing few methods of regular Rails logger with new version in the 

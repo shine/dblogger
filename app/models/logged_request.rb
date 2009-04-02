@@ -87,8 +87,11 @@ class LoggedRequest
 
       define_method("percent_of_"+level.downcase + "s_during_last") do |dt|
         all = LoggedRequest.during_last dt
-        level_type = all.select{|req| LoggedEvent.this_and_higher_levels(level).keys.any?{|key| key == req.level}}
-        all.empty? ? 0 : sprintf("%.3f", level_type.size.to_f/all.size).to_f
+
+        level_numbers = LoggedEvent.this_and_higher_levels(level.downcase).keys
+        level_type = all.select{|req| level_numbers.include?(req.level_number)}
+
+        all.empty? ? 0.0 : sprintf("%.3f", level_type.size.to_f/all.size).to_f
       end
 
       define_method("latest_"+level.downcase) do

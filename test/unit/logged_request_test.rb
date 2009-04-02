@@ -46,6 +46,12 @@ class LoggedRequestTest < Test::Unit::TestCase
     assert percent <= 1.0
   end
 
+  should "return 100 percent for info types of messages" do
+    percent = LoggedRequest.percent_of_infos_during_last 6.months
+
+    assert_equal 1.0, percent
+  end
+
   should "have timestamp attributes equal to the latest event in it" do
     req = LoggedRequest.latest_info
     req_created_at = req.created_at
