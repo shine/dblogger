@@ -5,7 +5,24 @@ class LoggedRequest
     @events = events
   end
 
+  def event_of_type type
+    @events.each do |event|
+      return event if event.content_type == type
+    end
 
+    nil
+  end
+
+  def params
+    params_event = self.event_of_type "parameters"
+
+    if params_event.blank? # no parameters passed in this request
+      nil
+    else
+      hash_string = "{" + params_event.message.scan(/Parameters: \{(.*)\}/)[0][0] + "}"
+      eval hash_string
+    end
+  end
 
   # There can be only one (c) value in the set of events
   LoggedEvent.mcleod_fields.each do |field_name|

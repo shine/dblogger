@@ -81,4 +81,23 @@ class LoggedRequestTest < Test::Unit::TestCase
       assert latest.created_at > request.created_at
     end
   end
+
+  should "be able to find events inside by their type" do
+    latest = LoggedRequest.latest_error
+
+    assert_equal latest.event_of_type("processing"), latest.events.first
+  end
+
+  should "have params hash with all parameters passed into action" do
+    parametrised_request = LoggedRequest.during_last(1.year, {:action => 'show'}).last
+
+    assert parametrised_request.params['id'].present?
+    assert parametrised_request.params['id'].to_i > 0
+  end
+
+  should "have no params for index actions" do
+    index_request = LoggedRequest.during_last(1.year, {:action => 'index'}).last
+
+    assert_nil index_request.params
+  end
 end
